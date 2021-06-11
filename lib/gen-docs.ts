@@ -9,6 +9,7 @@ import traverse from '@babel/traverse';
 import getFileName from '../src/path/getFileName';
 import * as commentParser from 'comment-parser/lib'
 import { Tokens } from 'comment-parser/lib';
+import getExportDefaultFunction from '../src/ast/getExportDefaultFunction';
 const testPath = path.resolve(__dirname, '../test/**/*.ts');
 const testFiles = glob.sync(testPath);
 export function seedTokens(tokens: Partial<Tokens> = {}): Tokens {
@@ -82,7 +83,9 @@ testFiles.forEach((file) => {
             if ((node.callee as any).name === "it") {
                 let ret = node.arguments.map((arg) => {
                     if (arg.type === 'StringLiteral')
-                        return arg.value;
+                        return '✅ ' + arg.value;
+                    if (arg.type === 'TemplateLiteral')
+                        return '✅ ' + sourceStr.substring(arg.start!, arg.end!).replace(/^`([^]*)`$/gm, '$1');
                     if (arg.type === 'FunctionExpression' || arg.type === 'ArrowFunctionExpression') {
                         if (arg.body.type === 'BlockStatement') {
                             const a = arg.body.body.map((statement) => {
@@ -151,64 +154,121 @@ testFiles.forEach((file) => {
                         sourceType: 'module',
                         plugins: ['typescript']
                     })
-                    traverse(ast, {
-                        Identifier({ node, parent }) {
-                            // console.log(node.name, parent.leadingComments)
-                            if (node.name === fileName && parent.type !== 'ExportDefaultDeclaration' && parent.type !== 'ImportDefaultSpecifier') {
-                                let comment = parent.leadingComments ? parent.leadingComments[parent.leadingComments.length - 1].value : `*\n* `;
-                                let json = commentParser.parse(`/** ${comment} */`)
-                                let findSameExampleIndex = json[0].source.findIndex((item) => {
-                                    return item.tokens.tag.indexOf('example') !== -1
-                                }) || -1
-                                // console.log(JSON.stringify(arrExample, null, 2))
-                                // console.log(arrExample)
-                                let items = arrExample.reduce((totalArr, arr) => {
-                                    // 每一个都是一个注释
-                                    return totalArr.concat({
-                                        "number": 0,
-                                        "source": "",
-                                        "tokens": seedTokens({
-                                            tag: '@example',
-                                            name: arr[0],
-                                            description: ''
 
-                                        })
-                                    }, arr[1].map((text: any) => {
-                                        return {
-                                            "number": 0,
-                                            "source": "",
-                                            "tokens": seedTokens({
-                                                delimiter: '*',
-                                                tag: '',
-                                                name: '',
-                                                description: text
+                    let _funNode = getExportDefaultFunction(ast);
 
-                                            })
-                                        }
-                                    }))
-                                }, [])
+                    if (_funNode) {
+                        let comment = _funNode.leadingComments ? _funNode.leadingComments[_funNode.leadingComments.length - 1].value : `*\n* `;
+                        let json = commentParser.parse(`/** ${comment} */`)
+                        let findSameExampleIndex = json[0].source.findIndex((item) => {
+                            return item.tokens.tag.indexOf('example') !== -1
+                        }) || -1
 
-                                json[0] && json[0].source.splice(findSameExampleIndex, 0, ...items)
+                        let items = arrExample.reduce((totalArr, arr) => {
+                            // 每一个都是一个注释
+                            return totalArr.concat({
+                                "number": 0,
+                                "source": "",
+                                "tokens": seedTokens({
+                                    tag: '@example',
+                                    name: arr[0],
+                                    description: ''
 
+                                })
+                            }, arr[1].map((text: any) => {
+                                return {
+                                    "number": 0,
+                                    "source": "",
+                                    "tokens": seedTokens({
+                                        delimiter: '*',
+                                        tag: '',
+                                        name: '',
+                                        description: Array.isArray(text) ? text.map(i => i.replace(/\*\//mg, '\* \/')) : text.replace(/\*\//mg, '\* \/')
 
-                                const transforms = commentParser.transforms.flow();
-                                const comment_str = <any>json.map((item) => commentParser.stringify(transforms(item)).match(/\/\*([^]*)\*\//)![1]).join('\n')
-                                // console.log(comment_str).
-                                if (node.name === 'getFileName') {
-                                    console.log(comment_str, JSON.stringify(json, null, 2))
+                                    })
                                 }
-                                if (parent.leadingComments) {
-                                    parent.leadingComments[parent.leadingComments.length - 1].value = comment_str.replace(/^(\*)[^\*]*\*+/, '$1');
-                                } else {
-                                    parent.leadingComments = [genCommentBlock({ value: comment_str.replace(/^(\*)[^\*]*\*+/, '$1') })];
-                                }
+                            }))
+                        }, [])
 
-                                const gg = generate(ast.program)
-                                fs.outputFileSync(genFilePath, gg.code);
-                                flag = true;
-                            }
+                        json[0] && json[0].source.splice(findSameExampleIndex, 0, ...items)
+
+
+                        const transforms = commentParser.transforms.flow();
+                        const comment_str = <any>json.map((item) => commentParser.stringify(transforms(item)).match(/\/\*([^]*)\*\//)![1]).join('\n')
+                        // console.log(comment_str).
+                        // if (node.name === 'getFileName') {
+                        //     console.log(comment_str, JSON.stringify(json, null, 2))
+                        // }
+                        if (_funNode.leadingComments) {
+                            _funNode.leadingComments[_funNode.leadingComments.length - 1].value = comment_str.replace(/^(\*)[^\*]*\*+/, '$1');
+                        } else {
+                            _funNode.leadingComments = [genCommentBlock({ value: comment_str.replace(/^(\*)[^\*]*\*+/, '$1') })];
                         }
-                    })
+
+                        const gg = generate(ast.program)
+                        fs.outputFileSync(genFilePath, gg.code);
+                        flag = true;
+                    }
+                    // let comment = node.leadingComments ? parent.leadingComments[parent.leadingComments.length - 1].value : `*\n* `;
+
+                    // traverse(ast, {
+                    //     Identifier({ node, parent }) {
+                    //         // console.log(node.name, parent.leadingComments)
+                    //         if (node.name === fileName && parent.type !== 'ExportDefaultDeclaration' && parent.type !== 'ImportDefaultSpecifier') {
+                    //             let comment = parent.leadingComments ? parent.leadingComments[parent.leadingComments.length - 1].value : `*\n* `;
+                    //             let json = commentParser.parse(`/** ${comment} */`)
+                    //             let findSameExampleIndex = json[0].source.findIndex((item) => {
+                    //                 return item.tokens.tag.indexOf('example') !== -1
+                    //             }) || -1
+                    //             // console.log(JSON.stringify(arrExample, null, 2))
+                    //             // console.log(arrExample)
+                    //             let items = arrExample.reduce((totalArr, arr) => {
+                    //                 // 每一个都是一个注释
+                    //                 return totalArr.concat({
+                    //                     "number": 0,
+                    //                     "source": "",
+                    //                     "tokens": seedTokens({
+                    //                         tag: '@example',
+                    //                         name: arr[0],
+                    //                         description: ''
+
+                    //                     })
+                    //                 }, arr[1].map((text: any) => {
+                    //                     return {
+                    //                         "number": 0,
+                    //                         "source": "",
+                    //                         "tokens": seedTokens({
+                    //                             delimiter: '*',
+                    //                             tag: '',
+                    //                             name: '',
+                    //                             description: text
+
+                    //                         })
+                    //                     }
+                    //                 }))
+                    //             }, [])
+
+                    //             json[0] && json[0].source.splice(findSameExampleIndex, 0, ...items)
+
+
+                    //             const transforms = commentParser.transforms.flow();
+                    //             const comment_str = <any>json.map((item) => commentParser.stringify(transforms(item)).match(/\/\*([^]*)\*\//)![1]).join('\n')
+                    //             // console.log(comment_str).
+                    //             if (node.name === 'getFileName') {
+                    //                 console.log(comment_str, JSON.stringify(json, null, 2))
+                    //             }
+                    //             if (parent.leadingComments) {
+                    //                 parent.leadingComments[parent.leadingComments.length - 1].value = comment_str.replace(/^(\*)[^\*]*\*+/, '$1');
+                    //             } else {
+                    //                 parent.leadingComments = [genCommentBlock({ value: comment_str.replace(/^(\*)[^\*]*\*+/, '$1') })];
+                    //             }
+
+                    //             const gg = generate(ast.program)
+                    //             fs.outputFileSync(genFilePath, gg.code);
+                    //             flag = true;
+                    //         }
+                    //     }
+                    // })
                 } catch (error) {
                     console.error(error)
 
@@ -223,7 +283,8 @@ testFiles.forEach((file) => {
     })
     if (!result) {
         // 回写
-        fs.copyFileSync(srcFilePath, genFilePath);
+
+        fs.outputFileSync(genFilePath, fs.readFileSync(srcFilePath).toString(),);
         // console.log(result)
     }
 

@@ -1,3 +1,6 @@
 gen/**
 !gen/.gitkeep
 node_modules/
+dist
+package-lock.json
+output

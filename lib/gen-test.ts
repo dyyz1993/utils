@@ -4,7 +4,6 @@ import path from 'path';
 import fs from 'fs-extra';
 import ejs from 'ejs';
 import last from '../src/array/last';
-// import difference from '../src/array/difference';
 
 const srcPath = path.resolve(__dirname, '../src/**/*.ts');
 const srcFiles = glob.sync(srcPath);
