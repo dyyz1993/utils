@@ -128,7 +128,7 @@ function genItCode(input: string) {
             }
             return arr.concat(`expect(${item[2].trim()}).eq(${item[3].trim()});`)
         }, []).join('\n ');
-        temp = `it('${spec.title.trim()}',async function(){\n${temp}\n})`
+        temp = `it(\`${spec.title.trim()}\`,async function(){\n${temp}\n})`
         tempArr.push(temp)
     })
     return tempArr.join('\n');

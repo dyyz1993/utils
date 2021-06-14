@@ -1,6 +1,6 @@
 import isStr from "../string/isStr";
 
-
+//https://github.com/XmanLin/MyUtils/blob/master/dateUtil/dateUtil.js
 /**
  * Convert time string formats to milliseconds.
  * @param str {string | number } 'ms' | 's' | 'm' | 'h' | 'd' | 'y'

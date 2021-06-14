@@ -74,6 +74,10 @@ export const g = ()=>{}
 */
 export const f = function (){}
 
+export class Name{}
+
+export default class Name2{}
+
 
 `
     let ast = parse(str, {
@@ -81,7 +85,7 @@ export const f = function (){}
       sourceType: "module",
     })
 
-    expect(getExportDeclaration(ast)).length(5)
+    expect(getExportDeclaration(ast)).length(7)
 
   });
 

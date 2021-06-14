@@ -29,7 +29,9 @@ export default function getExportDeclaration(ast: t.File) {
                     })
 
                 }
-                if (node.declaration?.type === 'FunctionDeclaration') {
+                // export function a(){}
+                // export class a(){}
+                if (node.declaration?.type === 'FunctionDeclaration' || node.declaration?.type === 'ClassDeclaration') {
                     if (node.declaration.id?.type === 'Identifier') {
                         let declaration = node.declaration.id.name;
                         if (declaration) {
@@ -59,7 +61,9 @@ export default function getExportDeclaration(ast: t.File) {
                     }
 
                 }
-                if (node.declaration.type === 'FunctionDeclaration' && node.declaration.id && node.declaration.id.name) {
+                //export default function a(){}
+                //export default class {}
+                if ((node.declaration.type === 'FunctionDeclaration' || node.declaration.type === 'ClassDeclaration') && node.declaration.id && node.declaration.id.name) {
                     nodes.push({
                         declaration: node.declaration.id.name,
                         node,
