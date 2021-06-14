@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import numberToUpper from "../../src/math/numberToUpper";
 describe("numberToUpper", async () => {

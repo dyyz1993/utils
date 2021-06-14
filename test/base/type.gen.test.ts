@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import type from "../../src/base/type";
 describe("type", async () => {

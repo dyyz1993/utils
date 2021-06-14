@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import formatMoney from "../../src/math/formatMoney";
 describe("formatMoney", async () => {

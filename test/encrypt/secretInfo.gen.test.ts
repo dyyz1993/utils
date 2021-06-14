@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import secretInfo from "../../src/encrypt/secretInfo";
 describe("secretInfo", async () => {

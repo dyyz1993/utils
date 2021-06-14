@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import merge from "../../src/object/merge";
 describe("merge", async () => {

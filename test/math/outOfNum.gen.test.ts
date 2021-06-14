@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import outOfNum from "../../src/math/outOfNum";
 describe("outOfNum", async () => {

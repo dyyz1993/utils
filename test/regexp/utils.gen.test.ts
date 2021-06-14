@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import { isTrainNum, isHttpAndPort, isDecimal } from "../../src/regexp/utils";
 describe("utils", async () => {

@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import EventEmitter from "../../src/base/EventEmitter";
 describe("EventEmitter", async () => {

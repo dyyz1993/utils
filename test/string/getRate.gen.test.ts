@@ -1,3 +1,4 @@
+/** generate code from docs */
 import { expect } from "chai";
 import getRate from "../../src/string/getRate";
 describe("getRate", async () => {
