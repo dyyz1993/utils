@@ -31,11 +31,15 @@ export default function findDeclaration(ast: t.File, name: string) {
             }
         }
         //function a(){}
-        if (node.type === 'FunctionDeclaration') {
-            if (node.id && node.id.type === 'Identifier' && node.id.name === name) {
-                return node;
-            }
+        if (node.type === 'FunctionDeclaration' && node.id && node.id.type === 'Identifier' && node.id.name === name) {
+            return node;
         }
+
+        //class A {}
+        if (node.type === 'ClassDeclaration' && node.id && node.id.name === name) {
+            return node;
+        }
+
         // export default function a()
         // export default a;
         if (node.type === "ExportDefaultDeclaration") {

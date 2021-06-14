@@ -38,13 +38,6 @@ interface IListener {
  * count //=> 1
  * event.off('q',fn,{});event.trigger('q');
  * count //=> 2
- * 
- * @example 移除某一类型的所有监听 offAll('name')
- * const event = new EventEmitter();let count = 0;function fn(){count++}
- * event.on('q',fn);event.trigger('q');
- * count //=> 1
- * event.offAll('q');event.trigger('q');
- * count //=> 1
  * @example 移除所有监听 offAll()
  * const event = new EventEmitter();let count = 0;function fn(){count++}
  * event.on('q',fn);event.on('q2',fn);event.trigger('q');event.trigger('q2')
@@ -76,7 +69,6 @@ export default class EventEmitter {
       scope
     });
   }
-
   off(name: string, callback: Function, scope: any = null) {
     const listeners = this.$_listeners[name];
     if (Array.isArray(listeners)) {
@@ -89,6 +81,16 @@ export default class EventEmitter {
     }
   }
 
+  /**
+   * 
+   * @param name 
+  * @example 移除某一类型的所有监听 offAll('name')
+  * const event = new EventEmitter();let count = 0;function fn(){count++}
+  * event.on('q',fn);event.trigger('q');
+  * count //=> 1
+  * event.offAll('q');event.trigger('q');
+  * count //=> 1
+   */
   offAll(name?: string) {
     // 移除所有监听
     if (name === undefined) {

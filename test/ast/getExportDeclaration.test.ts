@@ -105,6 +105,62 @@ export default class Name2{}
     expect(getExportDeclaration(ast)).length(1)
     expect(getExportDeclaration(ast)[0].comments).eq(`/**\n * @param n \n * @example ssss \n */`)
   });
+  it(`find class method `, async () => {
+
+    const str = `
+    /**
+     * @param n 
+     * @example ssss 
+     */
+    class Person{
+      getName(){}
+    }
+    export default Person
+        `
+    let ast = parse(str, {
+      plugins: ['typescript'],
+      sourceType: "module",
+    })
+    expect(getExportDeclaration(ast)).length(2)
+  });
+
+  it(`find export default class method `, async () => {
+
+    const str = `
+    /**
+     * @param n 
+     * @example ssss 
+     */
+     export default class Person{
+      getName(){}
+    }
+        `
+    let ast = parse(str, {
+      plugins: ['typescript'],
+      sourceType: "module",
+    })
+    expect(getExportDeclaration(ast)).length(2)
+  });
+
+  it(`find export  class method `, async () => {
+
+    const str = `
+    /**
+     * @param n 
+     * @example ssss 
+     */
+    export class Person{
+      getName(){}
+    }
+        `
+    let ast = parse(str, {
+      plugins: ['typescript'],
+      sourceType: "module",
+    })
+    expect(getExportDeclaration(ast)).length(2)
+  });
+
+
 
   it(`not find `, async () => {
 

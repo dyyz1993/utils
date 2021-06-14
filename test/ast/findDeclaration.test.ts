@@ -48,7 +48,7 @@ describe("findDeclaration", async () => {
     expect(findDeclaration(ast, 'a')?.type).eq('ExportDefaultDeclaration')
   });
 
-  it(`find export default declaration `, async () => {
+  it(`find function declaration `, async () => {
     let exampleStr = `
     function a(){
 
@@ -59,5 +59,16 @@ describe("findDeclaration", async () => {
       sourceType: "module",
     })
     expect(findDeclaration(ast, 'a')?.type).eq('FunctionDeclaration')
+  });
+
+  it(`find class declaration `, async () => {
+    let exampleStr = `
+    class A {}
+    `
+    const ast = parse(exampleStr, {
+      plugins: ['typescript'],
+      sourceType: "module",
+    })
+    expect(findDeclaration(ast, 'A')?.type).eq('ClassDeclaration')
   });
 });

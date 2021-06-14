@@ -49,19 +49,6 @@ describe("EventEmitter", async () => {
     event.trigger("q");
     expect(count).eq(2);
   });
-  it(`移除某一类型的所有监听 offAll('name')`, async function () {
-    const event = new EventEmitter();
-    let count = 0;
-    function fn() {
-      count++;
-    }
-    event.on("q", fn);
-    event.trigger("q");
-    expect(count).eq(1);
-    event.offAll("q");
-    event.trigger("q");
-    expect(count).eq(1);
-  });
   it(`移除所有监听 offAll()`, async function () {
     const event = new EventEmitter();
     let count = 0;
@@ -92,11 +79,24 @@ describe("EventEmitter", async () => {
     const event = new EventEmitter();
     let count = 0;
     function fn() {
-      // @ts-ignore
+      //@ts-ignore
       count += this.a;
     }
     event.on("q", fn, { a: 5 });
     event.trigger("q");
     expect(count).eq(5);
+  });
+  it(`移除某一类型的所有监听 offAll('name')`, async function () {
+    const event = new EventEmitter();
+    let count = 0;
+    function fn() {
+      count++;
+    }
+    event.on("q", fn);
+    event.trigger("q");
+    expect(count).eq(1);
+    event.offAll("q");
+    event.trigger("q");
+    expect(count).eq(1);
   });
 });
