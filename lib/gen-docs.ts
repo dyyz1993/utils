@@ -10,8 +10,8 @@ import getFileName from '../src/path/getFileName';
 import * as commentParser from 'comment-parser/lib'
 import { Tokens } from 'comment-parser/lib';
 import getExportDefaultFunction from '../src/ast/getExportDefaultFunction';
-const testPath = path.resolve(__dirname, '../test/**/*.ts');
-const testFiles = glob.sync(testPath);
+const testPath = path.resolve(__dirname, '../test/**/*.test.ts');
+const testFiles = glob.sync(testPath).filter(i => /\/(?!gen)[^\.\s]*\.test\.ts/.test(i));
 export function seedTokens(tokens: Partial<Tokens> = {}): Tokens {
     return {
         start: ' ',
@@ -148,7 +148,7 @@ testFiles.forEach((file) => {
             if (item.importType === 'import') {
                 // console.log()
                 const filePath = path.resolve(__dirname, './src/', item.path);
-
+                // console.log(filePath, item.path)
                 try {
                     let ast = parse(fs.readFileSync(require.resolve(filePath)).toString(), {
                         sourceType: 'module',
@@ -160,7 +160,7 @@ testFiles.forEach((file) => {
                     if (_funNode) {
                         let comment = _funNode.leadingComments ? _funNode.leadingComments[_funNode.leadingComments.length - 1].value : `*\n* `;
                         let json = commentParser.parse(`/** ${comment} */`)
-                        let findSameExampleIndex = json[0].source.findIndex((item) => {
+                        let findSameExampleIndex = json.length > 0 && json[0].source.findIndex((item) => {
                             return item.tokens.tag.indexOf('example') !== -1
                         }) || -1
 
@@ -209,68 +209,8 @@ testFiles.forEach((file) => {
                         fs.outputFileSync(genFilePath, gg.code);
                         flag = true;
                     }
-                    // let comment = node.leadingComments ? parent.leadingComments[parent.leadingComments.length - 1].value : `*\n* `;
-
-                    // traverse(ast, {
-                    //     Identifier({ node, parent }) {
-                    //         // console.log(node.name, parent.leadingComments)
-                    //         if (node.name === fileName && parent.type !== 'ExportDefaultDeclaration' && parent.type !== 'ImportDefaultSpecifier') {
-                    //             let comment = parent.leadingComments ? parent.leadingComments[parent.leadingComments.length - 1].value : `*\n* `;
-                    //             let json = commentParser.parse(`/** ${comment} */`)
-                    //             let findSameExampleIndex = json[0].source.findIndex((item) => {
-                    //                 return item.tokens.tag.indexOf('example') !== -1
-                    //             }) || -1
-                    //             // console.log(JSON.stringify(arrExample, null, 2))
-                    //             // console.log(arrExample)
-                    //             let items = arrExample.reduce((totalArr, arr) => {
-                    //                 // 每一个都是一个注释
-                    //                 return totalArr.concat({
-                    //                     "number": 0,
-                    //                     "source": "",
-                    //                     "tokens": seedTokens({
-                    //                         tag: '@example',
-                    //                         name: arr[0],
-                    //                         description: ''
-
-                    //                     })
-                    //                 }, arr[1].map((text: any) => {
-                    //                     return {
-                    //                         "number": 0,
-                    //                         "source": "",
-                    //                         "tokens": seedTokens({
-                    //                             delimiter: '*',
-                    //                             tag: '',
-                    //                             name: '',
-                    //                             description: text
-
-                    //                         })
-                    //                     }
-                    //                 }))
-                    //             }, [])
-
-                    //             json[0] && json[0].source.splice(findSameExampleIndex, 0, ...items)
-
-
-                    //             const transforms = commentParser.transforms.flow();
-                    //             const comment_str = <any>json.map((item) => commentParser.stringify(transforms(item)).match(/\/\*([^]*)\*\//)![1]).join('\n')
-                    //             // console.log(comment_str).
-                    //             if (node.name === 'getFileName') {
-                    //                 console.log(comment_str, JSON.stringify(json, null, 2))
-                    //             }
-                    //             if (parent.leadingComments) {
-                    //                 parent.leadingComments[parent.leadingComments.length - 1].value = comment_str.replace(/^(\*)[^\*]*\*+/, '$1');
-                    //             } else {
-                    //                 parent.leadingComments = [genCommentBlock({ value: comment_str.replace(/^(\*)[^\*]*\*+/, '$1') })];
-                    //             }
-
-                    //             const gg = generate(ast.program)
-                    //             fs.outputFileSync(genFilePath, gg.code);
-                    //             flag = true;
-                    //         }
-                    //     }
-                    // })
                 } catch (error) {
-                    console.error(error)
+                    console.error(file, fileName, error)
 
                 }
 

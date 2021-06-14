@@ -1,7 +1,6 @@
 import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';
-import splitPath from '../gen/path/splitPath';
 
 const browserPaths = path.resolve(__dirname, '../gen/!(node|ast)*/*.ts');
 const nodePaths = path.resolve(__dirname, '../gen/?(node|ast)/*.ts');
@@ -35,3 +34,4 @@ function gen(files: string[], outFile: string) {
 
     fs.outputFileSync(outFile, importStr + exportStr)
 }
+

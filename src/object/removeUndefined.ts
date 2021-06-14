@@ -4,9 +4,10 @@
  * @param isNewValue 是否返回新值
  * @returns {any | T}
  */
-export default function removeUndefined<T, K extends T>(object: T, isNewValue: boolean = false): Partial<T> | unknown {
+//TODO 返回声明不对
+export default function removeUndefined<T>(object: T, isNewValue: boolean = false): Partial<T> {
     if (isNewValue) {
-        return Object.fromEntries(Object.entries(object).filter(([, value]) => value !== undefined))
+        return Object.fromEntries(Object.entries(object).filter(([, value]) => value !== undefined)) as Partial<T>
     }
     Object.keys(object).forEach((key) => object[key as keyof typeof object] === undefined && delete object[key as keyof typeof object])
     return object

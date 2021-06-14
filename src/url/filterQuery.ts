@@ -8,7 +8,7 @@ import omit from 'lodash/omit'
  * @returns url
  */
 export default function filterQuery(filterParamNames: string[], addParams: { [key: string]: any } = {}, url: string = window.location.href,): string {
-    let ret = queryString.parseUrl(url);
+    let ret = queryString.parseUrl(url, { parseFragmentIdentifier: true });
     let _query = Object.assign(omit(ret.query, filterParamNames), addParams);
-    return queryString.stringifyUrl({ ...ret, query: _query })
+    return queryString.stringifyUrl({ ...ret, query: _query }, { encode: false })
 };
