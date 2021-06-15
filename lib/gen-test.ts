@@ -22,6 +22,12 @@ const srcFilePaths = srcFiles.reduce((arr: string[][], file) => {
     return arr;
 }, [])
 
+const testGenFiles = glob.sync(path.resolve(__dirname, '../test/**/*.gen.test.ts'))
+testGenFiles.forEach((file) => {
+    fs.removeSync(file)
+})
+// 移除自动生成的测试用例
+
 
 const templeStr = fs.readFileSync(path.resolve(__dirname, './test.temple.ejs')).toString()
 const templeGenStr = fs.readFileSync(path.resolve(__dirname, './gen.test.temple.ejs')).toString()
@@ -68,16 +74,6 @@ srcFilePaths.forEach(([file, sourceFile]) => {
 
 
 })
-
-// srcGenFilePaths.forEach(([fileName, sourceFile]) => {
-//     const fileGenPath = path.resolve(__dirname, '../test/' + fileName + '.gen.test.ts')
-//     const filename = last(fileName.split('/'))
-//     // const code = genItCode(fs.readFileSync(file).toString())
-
-
-
-// })
-
 function docs2test(ast: t.File) {
 
     let data: {
@@ -125,6 +121,10 @@ function genItCode(input: string) {
         temp += [...ret].reduce((arr, item) => {
             if (item[1].trim()) {
                 arr.push(item[1].trim())
+            }
+            let value = item[3].trim();
+            if (value === 'NaN') {
+                return arr.concat(`expect(${item[2].trim()}).NaN`)
             }
             return arr.concat(`expect(${item[2].trim()}).eq(${item[3].trim()});`)
         }, []).join('\n ');
