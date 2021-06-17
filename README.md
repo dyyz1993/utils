@@ -4,3 +4,7 @@
 
 [![NPM version](https://img.shields.io/npm/v/@dyyz1993/utils.svg?style=flat)](https://npmjs.org/package/@dyyz1993/utils)
 [![NPM downloads](http://img.shields.io/npm/dm/@dyyz1993/utils.svg?style=flat)](https://npmjs.org/package/@dyyz1993/utils)
+
+
+### 支持docs example 注释生成测试用例
+### 支持测试用例转docs examples
