@@ -24,17 +24,16 @@ const argv: any = yargs(hideBin(process.argv))
     .argv
 let exc = `npm run gen-test && npm run mocha test/${argv.m}/*.ts`
 if (argv.m) {
-    exc = `npm run gen-test && npm run mocha test/${argv.m}/*.ts`
+    exc = `npm run gen-test && npm run mocha test/${argv.m}/*.ts `
 }
 if (argv.f) {
-    exc = `npm run gen-test && npm run mocha test/**/${argv.f}.*.ts`
+    exc = `npm run gen-test && npm run mocha test/**/${argv.f}.*.ts `
 }
-cp.exec(exc, (err, stdout) => {
-    if (err) {
-        console.error(err)
-    } else {
-        console.log(stdout)
-    }
-}).on('close', function () {
-    console.log('执行完毕')
-})
+
+let child = cp.spawn(exc, ['--color'], { 'stdio': 'pipe' });
+
+
+
+
+
+child.stdout.pipe(process.stdout);

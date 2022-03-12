@@ -1,18 +1,21 @@
 import isStr from "../string/isStr";
 
+
 //https://github.com/XmanLin/MyUtils/blob/master/dateUtil/dateUtil.js
 /**
  * Convert time string formats to milliseconds.
  * @param str {string | number } 'ms' | 's' | 'm' | 'h' | 'd' | 'y'
  */
-export default function ms(str: string | number) {
+export default function ms<T extends string | number>(str: T, isForceConvertMilliseconds?: boolean): number | string {
 
     if (isStr(str)) {
-        const match = (str as string).match(regStrTime);
+        const match: null | unknown[] = (str as string).match(regStrTime);
 
         if (!match) return 0;
         let key: SuffixKey = match[2] as SuffixKey || 'ms';
-        return +(match[1]) * factor[key]!;
+        return (+(match[1] as number) * factor[key]! as number);
+    } else if (isForceConvertMilliseconds) {
+        return str as number;
     } else {
         const num: number = str as number;
         let suffix: SuffixKey = 'ms';
@@ -23,10 +26,10 @@ export default function ms(str: string | number) {
                 break;
             }
         }
-
         return +(num / factor[suffix]!).toFixed(2) + suffix;
     }
 };
+
 
 
 type SuffixKey = 'ms' | 's' | 'm' | 'h' | 'd' | 'y';

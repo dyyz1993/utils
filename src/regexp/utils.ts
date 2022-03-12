@@ -289,7 +289,7 @@ export const isDecimal = (value: string) => /^-?\d+\.\d+$/g.test(value);
  * 验证数字
  * @param { string } value
  */
-export const isNumber = (value: string) => /^\d{1,}$/g.test(value);
+export const isNumber = (value: any) => /^\d{1,}$/g.test(value);
 
 /**
  *  验证html标签(宽松匹配)
